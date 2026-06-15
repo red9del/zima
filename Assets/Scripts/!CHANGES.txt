@@ -1,0 +1,35 @@
+*Попил пива*
+*Новые файлы*
+
+`Assets/Scripts/IDamageable.cs`
+Интерфейс получения урона. Методы: TakeDamage(float), свойство IsAlive. Зависимостей нет.
+
+`Assets/Scripts/WeaponDamage.cs`
+Компонент на оружие рядом с WeaponRays. Хранит поле damage. Используется в WeaponRays.
+
+`Assets/Scripts/BasicEnemy.cs`
+Компонент врага. Реализует IDamageable, хранит HP, физическое отбрасывание при смерти.
+• OnDeath → EnemyRespawn подписывается
+• SetHitDirection(Vector3) ← WeaponRays
+• Respawn() — сброс HP, физики, скорости
+
+`Assets/Scripts/EnemyRespawn.cs`
+Компонент рядом с BasicEnemy. При смерти: таймер → стартовая позиция → BasicEnemy.Respawn().
+
+*Изменения*
+
+`Assets/Scripts/WeaponsScripts/WeaponRays.cs`
+В FireWeapon() добавлено:
++ ищет IDamageable → TakeDamage()
++ BasicEnemy → SetHitDirection() перед уроном
++ WeaponDamage.damage или fallback на bulletForce
+
+*Схема зависимостей*
+WeaponRays
+  ├── IDamageable   (интерфейс)
+  ├── BasicEnemy    (SetHitDirection)
+  └── WeaponDamage  (damage)
+BasicEnemy
+  └── IDamageable
+      └── OnDeath ──► EnemyRespawn
+                        └── Respawn()
